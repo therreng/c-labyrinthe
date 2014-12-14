@@ -17,7 +17,9 @@ class Salle
         Salle(Salle & S);
         virtual ~Salle();
         void affecter(int i, couloir C);
-        void afficher(int j=0);
+        int afficher(int j=0);
+        string getObjet()const;
+        couloir getPorte(int i);
 
     private:
         couloir portes[4];

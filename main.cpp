@@ -5,21 +5,60 @@
 #include<limits>
 #include "Salle.h"
 #include "Labyrinthe.h"
+#include "Personnage.h"
+
+
 
 using namespace std;
 
+
+
 int nombresalles(ifstream & fichier);
 
-int ouvrir(char* chemin);
 
 int main(int argc, char* argv[]){
     if(argc==1){cerr<<"Veuillez spécifier un fichier plan à lire"<<endl;
                 return 0;
     }
     char* chemin=argv[1];
-    cout<<ouvrir(chemin)<<endl;
+    int NbSalles;
+    ifstream fichier(chemin, ios::in);
+    //on essaye d'ouvrir le fichier nommé chemin en lecture. fichier est le nom du flux
+    if(!fichier){cerr << "Impossible d'ouvrir ce fichier"<<endl;return 0;}
 
-return 0;
+    NbSalles=nombresalles(fichier);
+    Labyrinthe plateau(NbSalles);
+    plateau.initialiser(fichier);
+    fichier.close();
+
+    Personnage hero(0); // numéro de la salle où se trouve le personnage
+    do{
+            int s=hero.getSalle();
+             if(s==NbSalles-1){
+                cout<<"Bravo! Vous avez gagné"<<endl;
+                return 0;
+            }
+
+        int n;
+        int choix;
+        cout<<"Salle "<<s<<endl;
+        n=plateau[s].afficher(hero.getDirection());
+        cout<<"Votre choix : ";
+        if(cin>> choix){
+            if(choix>n || choix<=0){cout<<"Choix invalide"<<endl;}
+            //par défaut le dernier choix est toujours d'arrêter le jeu
+            if(choix==n){cout<<"Merci d'avoir joué. A bientôt"<<endl;
+                        return 0;}
+            else{hero.progression(plateau, choix);}
+        }
+         else{cerr<<"Choix invalide"<<endl;
+            cin.clear();
+            cin.ignore(numeric_limits<int>::max(), '\n');
+        //si erreur -> vider le cin
+        }
+    }
+    while(1);
+    return 0;
 }
 
 
@@ -45,21 +84,3 @@ int nombresalles(ifstream & fichier){
     return n+1; //Les salles sont numérotées de 0 à n
 }
 
-int ouvrir(char* chemin){
-// ouvre le fichier dont le nom est donné par char
-    int i=0;
-    ifstream fichier(chemin, ios::in);
-    //on essaye d'ouvrir le fichier nommé chemin en lecture. fichier est le nom du flux
-    if(fichier){
-        i=nombresalles(fichier);
-        Labyrinthe plateau(i);
-        plateau.initialiser(fichier);
-        for(int k=0;k<3;k++){
-                cout<<"Salle "<<k<<endl;
-            plateau[k].afficher();
-        }
-        fichier.close();
-    }
-    else{cerr << "Impossible d'ouvrir ce fichier"<<endl;}
-    return i;
-}

@@ -13,12 +13,13 @@ class Labyrinthe
         virtual ~Labyrinthe();
         Salle& operator[](int i);
         void initialiser(ifstream& fichier);
+        static int chartoint(char c);
     protected:
         int nbsalles;
         Salle* plan;
     private:
         bool is_lettre(char a);
-        int chartoint(char c);
+
 };
 
 #endif // LABYRINTHE_H
